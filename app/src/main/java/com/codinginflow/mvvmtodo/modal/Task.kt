@@ -11,14 +11,14 @@ import java.text.DateFormat
 @Parcelize
 data class Task (
     val title : String,
-    val completed : Boolean,
-    val important : Boolean,
-    val description : String,
+    val completed : Boolean = false,
+    val important : Boolean = false,
+    val description : String = "",
     val created : Long = System.currentTimeMillis(),
 
     @PrimaryKey(autoGenerate = true)
-        val id : int = 0
-        ) : Parcelable{
+        val id : Int = 0
+) : Parcelable{
 
     val createdDateFormatted : String
     get() = DateFormat.getDateInstance().format(created)
