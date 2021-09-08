@@ -26,10 +26,11 @@ abstract class TaskDatabase  : RoomDatabase() {
             val dao = database.get().taskDao()
             applicationScope.launch {
                 dao.insert(Task("Create more tasks", important = true))
-                dao.insert(Task("Study DBMS", important = true))
+                dao.insert(Task("Study DBMS", important = false))
                 dao.insert(Task("Revise OOP "))
                 dao.insert(Task("Complete your project ", completed = true))
                 dao.insert(Task("Practice Leetcode"))
+                dao.insert(Task("Anne Frank novel , read 2 pages"))
             }
         }
     }
