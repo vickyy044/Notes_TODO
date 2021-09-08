@@ -1,4 +1,4 @@
-package com.codinginflow.mvvmtodo.util
+package com.notesTODOApplication.mvvmtodo.util
 
 import androidx.appcompat.widget.SearchView
 

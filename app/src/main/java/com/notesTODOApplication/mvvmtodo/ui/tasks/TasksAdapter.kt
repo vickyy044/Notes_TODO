@@ -1,4 +1,4 @@
-package com.codinginflow.mvvmtodo.ui.tasks
+package com.notesTODOApplication.mvvmtodo.ui.tasks
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -6,8 +6,8 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.codinginflow.mvvmtodo.databinding.ItemTaskBinding
-import com.codinginflow.mvvmtodo.modal.Task
+import com.notesTODOApplication.mvvmtodo.databinding.ItemTaskBinding
+import com.notesTODOApplication.mvvmtodo.modal.Task
 
 class TasksAdapter  : ListAdapter<Task, TasksAdapter.TaskViewHolder>(DiffCallback()) {
 

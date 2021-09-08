@@ -1,9 +1,9 @@
-package com.codinginflow.mvvmtodo.modal
+package com.notesTODOApplication.mvvmtodo.modal
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
-import com.codinginflow.mvvmtodo.di.ApplicationScope
+import com.notesTODOApplication.mvvmtodo.di.ApplicationScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import javax.inject.Inject

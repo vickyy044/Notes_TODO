@@ -1,4 +1,4 @@
-package com.codinginflow.mvvmtodo
+package com.notesTODOApplication.mvvmtodo
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle

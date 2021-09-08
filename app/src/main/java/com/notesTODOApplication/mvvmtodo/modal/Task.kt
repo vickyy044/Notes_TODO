@@ -1,4 +1,4 @@
-package com.codinginflow.mvvmtodo.modal
+package com.notesTODOApplication.mvvmtodo.modal
 
 import android.os.Parcelable
 import androidx.room.Entity

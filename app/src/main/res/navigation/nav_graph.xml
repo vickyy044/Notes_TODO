@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/tasksFragment"
-        android:name="com.codinginflow.mvvmtodo.ui.tasks.TaskFragment"
+        android:name="com.notesTODOApplication.mvvmtodo.ui.tasks.TaskFragment"
         android:label="fragment_tasks"
         tools:layout="@layout/fragment_tasks" />
 
