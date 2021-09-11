@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.notesTODOApplication.mvvmtodo.R
 import com.notesTODOApplication.mvvmtodo.databinding.FragmentTasksBinding
 import com.notesTODOApplication.mvvmtodo.modal.SortOrder
+import com.notesTODOApplication.mvvmtodo.modal.Task
 import com.notesTODOApplication.mvvmtodo.util.onQueryTextChanged
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.first
@@ -20,7 +21,7 @@ import kotlinx.coroutines.launch
 
 
 @AndroidEntryPoint
-class TaskFragment : Fragment(R.layout.fragment_tasks) {
+class TaskFragment : Fragment(R.layout.fragment_tasks) , TasksAdapter.OnItemClickListener{
 
     private val viewModel: TaskViewModel by viewModels()
 
@@ -28,7 +29,7 @@ class TaskFragment : Fragment(R.layout.fragment_tasks) {
         super.onViewCreated(view, savedInstanceState)
 
         val binding = FragmentTasksBinding.bind(view)
-        val taskAdapter = TasksAdapter()
+        val taskAdapter = TasksAdapter(this)
         binding.apply {
             recyclerViewTask.apply {
                 adapter = taskAdapter
@@ -79,6 +80,14 @@ class TaskFragment : Fragment(R.layout.fragment_tasks) {
             }else -> super.onOptionsItemSelected(item)
 
         }
+    }
+
+    override fun onItemClick(task: Task) {
+        viewModel.onTaskSelected(task)
+    }
+
+    override fun onCheckBoxClick(task: Task, isChecked: Boolean) {
+        viewModel.onTaskCheckedChanged(task, isChecked)
     }
 
 }

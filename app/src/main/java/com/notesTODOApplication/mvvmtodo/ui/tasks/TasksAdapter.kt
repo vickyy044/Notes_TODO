@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.notesTODOApplication.mvvmtodo.databinding.ItemTaskBinding
 import com.notesTODOApplication.mvvmtodo.modal.Task
 
-class TasksAdapter  : ListAdapter<Task, TasksAdapter.TaskViewHolder>(DiffCallback()) {
+class TasksAdapter (private  val listener : OnItemClickListener) : ListAdapter<Task, TasksAdapter.TaskViewHolder>(DiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TaskViewHolder {
         val binding  = ItemTaskBinding.inflate(LayoutInflater.from(parent.context) , parent,false)
@@ -21,7 +21,26 @@ class TasksAdapter  : ListAdapter<Task, TasksAdapter.TaskViewHolder>(DiffCallbac
         holder.bind(currentItem)
     }
 
-    class TaskViewHolder(private val binding : ItemTaskBinding) : RecyclerView.ViewHolder(binding.root){
+    inner class TaskViewHolder(private val binding : ItemTaskBinding) : RecyclerView.ViewHolder(binding.root){
+
+        init {
+            binding.apply {
+                root.setOnClickListener {
+                    val position = adapterPosition
+                    if(position!=RecyclerView.NO_POSITION){
+                        val task=  getItem(position)
+                        listener.onItemClick(task)
+                    }
+                }
+                checkboxCompleted.setOnClickListener {
+                    val position = adapterPosition
+                    if(position!= RecyclerView.NO_POSITION){
+                        val task = getItem(position)
+                        listener.onCheckBoxClick(task, checkboxCompleted.isChecked)
+                    }
+                }
+            }
+        }
 
         fun bind(task: Task){
             binding.apply {
@@ -32,6 +51,11 @@ class TasksAdapter  : ListAdapter<Task, TasksAdapter.TaskViewHolder>(DiffCallbac
 
             }
         }
+    }
+
+    interface OnItemClickListener {
+        fun onItemClick(task:Task)
+        fun onCheckBoxClick(task: Task, isChecked : Boolean)
     }
 
     class DiffCallback : DiffUtil.ItemCallback<Task>(){

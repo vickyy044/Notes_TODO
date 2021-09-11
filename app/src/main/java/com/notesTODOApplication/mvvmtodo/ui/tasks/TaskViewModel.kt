@@ -6,6 +6,7 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.notesTODOApplication.mvvmtodo.modal.PreferencesManager
 import com.notesTODOApplication.mvvmtodo.modal.SortOrder
+import com.notesTODOApplication.mvvmtodo.modal.Task
 import com.notesTODOApplication.mvvmtodo.modal.TaskDao
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
@@ -31,6 +32,8 @@ class TaskViewModel @ViewModelInject constructor(
         taskDao.getTasks(query, filterPreferences.sortOrder, filterPreferences.hideCompleted)
     }
 
+    val tasks = taskFlow.asLiveData( )
+
     fun onSortOrderSelected(sortOrder: SortOrder) = viewModelScope.launch {
         preferencesManager.updateSortOrder(sortOrder)
 
@@ -40,6 +43,13 @@ class TaskViewModel @ViewModelInject constructor(
         preferencesManager.updateHideCompleted(hideCompleted)
     }
 
-    val tasks = taskFlow.asLiveData( )
+    fun onTaskSelected(task: Task){}
+
+    fun onTaskCheckedChanged(task: Task, isChecked: Boolean) = viewModelScope.launch {
+
+        Thread{
+            taskDao.update(task.copy(completed = isChecked))
+        }.start()
+    }
 
 }
