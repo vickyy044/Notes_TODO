@@ -4,7 +4,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:layout="@layout/fragment_add_edit_task">
+    tools:layout="@layout/fragment_add_edit_task"
+    tools:context=".ui.addedittask.AddEditFragment">
+
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -26,6 +28,7 @@
             android:text="Important"/>
 
         <TextView
+            android:id="@+id/textView_dateCreated"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             tools:text="Date created : "/>

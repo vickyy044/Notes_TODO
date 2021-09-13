@@ -1,9 +1,8 @@
 package com.notesTODOApplication.mvvmtodo.ui.tasks
 
+import androidx.hilt.Assisted
 import androidx.hilt.lifecycle.ViewModelInject
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.notesTODOApplication.mvvmtodo.modal.PreferencesManager
 import com.notesTODOApplication.mvvmtodo.modal.SortOrder
 import com.notesTODOApplication.mvvmtodo.modal.Task
@@ -17,10 +16,11 @@ import kotlinx.coroutines.launch
 
 class TaskViewModel @ViewModelInject constructor(
     private  val taskDao: TaskDao,
-    private val preferencesManager: PreferencesManager
+    private val preferencesManager: PreferencesManager,
+    @Assisted private val state : SavedStateHandle
 ) : ViewModel(){
 
-    val searchQuery = MutableStateFlow("")
+    val searchQuery = state.getLiveData("searchQuery","")
 
     val preferencesFlow = preferencesManager.preferencesFlow
 
@@ -28,7 +28,7 @@ class TaskViewModel @ViewModelInject constructor(
     val taskEvent = taskEventChannel.receiveAsFlow()
 
     private val taskFlow = combine(
-        searchQuery,
+        searchQuery.asFlow(),
         preferencesFlow
     ){
         query,filterPreferences ->
@@ -48,7 +48,9 @@ class TaskViewModel @ViewModelInject constructor(
         preferencesManager.updateHideCompleted(hideCompleted)
     }
 
-    fun onTaskSelected(task: Task){}
+    fun onTaskSelected(task: Task) = viewModelScope.launch{
+        taskEventChannel.send(TaskEvent.NavigateToEditTaskScreen(task))
+    }
 
     fun onTaskCheckedChanged(task: Task, isChecked: Boolean) = viewModelScope.launch {
 
@@ -64,8 +66,17 @@ class TaskViewModel @ViewModelInject constructor(
         taskDao.insert(task)
     }
 
-    sealed class TaskEvent{
-        data class ShowUndoDeleteTaskMethod(val task: Task):TaskEvent()
+    fun onAddTaskClick() = viewModelScope.launch {
+        taskEventChannel.send(TaskEvent.NavigateToAddTaskScreen)
     }
+
+    sealed class TaskEvent{
+        object NavigateToAddTaskScreen : TaskEvent()
+        data class NavigateToEditTaskScreen (val task: Task) : TaskEvent()
+        data class ShowUndoDeleteTaskMethod(val task: Task):TaskEvent()
+
+    }
+
+
 
 }

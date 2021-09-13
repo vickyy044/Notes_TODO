@@ -9,6 +9,7 @@ import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -17,6 +18,7 @@ import com.notesTODOApplication.mvvmtodo.R
 import com.notesTODOApplication.mvvmtodo.databinding.FragmentTasksBinding
 import com.notesTODOApplication.mvvmtodo.modal.SortOrder
 import com.notesTODOApplication.mvvmtodo.modal.Task
+import com.notesTODOApplication.mvvmtodo.util.exhaustive
 import com.notesTODOApplication.mvvmtodo.util.onQueryTextChanged
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
@@ -25,7 +27,7 @@ import kotlinx.coroutines.launch
 
 
 @AndroidEntryPoint
-class TaskFragment : Fragment(R.layout.fragment_tasks) , TasksAdapter.OnItemClickListener{
+class TaskFragment : Fragment(R.layout.fragment_tasks), TasksAdapter.OnItemClickListener {
 
     private val viewModel: TaskViewModel by viewModels()
 
@@ -40,8 +42,10 @@ class TaskFragment : Fragment(R.layout.fragment_tasks) , TasksAdapter.OnItemClic
                 layoutManager = LinearLayoutManager(requireContext())
                 setHasFixedSize(true)
             }
-            ItemTouchHelper(object :ItemTouchHelper.SimpleCallback(0,
-            ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT){
+            ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(
+                0,
+                ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
+            ) {
                 override fun onMove(
                     recyclerView: RecyclerView,
                     viewHolder: RecyclerView.ViewHolder,
@@ -56,6 +60,11 @@ class TaskFragment : Fragment(R.layout.fragment_tasks) , TasksAdapter.OnItemClic
                 }
 
             }).attachToRecyclerView(recyclerViewTask)
+
+            floatingTask.setOnClickListener {
+                viewModel.onAddTaskClick()
+            }
+
         }
 
         viewModel.tasks.observe(viewLifecycleOwner) {
@@ -63,15 +72,23 @@ class TaskFragment : Fragment(R.layout.fragment_tasks) , TasksAdapter.OnItemClic
         }
 
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            viewModel.taskEvent.collect {event ->
-                when(event){
-                    is TaskViewModel.TaskEvent.ShowUndoDeleteTaskMethod ->{
-                        Snackbar.make(requireView(),"Task Deleted", Snackbar.LENGTH_LONG)
-                            .setAction("UNDO"){
+            viewModel.taskEvent.collect { event ->
+                when (event) {
+                    is TaskViewModel.TaskEvent.ShowUndoDeleteTaskMethod -> {
+                        Snackbar.make(requireView(), "Task Deleted", Snackbar.LENGTH_LONG)
+                            .setAction("UNDO") {
                                 viewModel.onUndoDeleteClick(event.task)
                             }.show()
                     }
-                }
+                    is TaskViewModel.TaskEvent.NavigateToAddTaskScreen -> {
+                        val action = TaskFragmentDirections.actionTasksFragmentToAddEditFragment(null,"New Task")
+                        findNavController().navigate(action)
+                    }
+                    is TaskViewModel.TaskEvent.NavigateToEditTaskScreen -> {
+                        val action = TaskFragmentDirections.actionTasksFragmentToAddEditFragment(event.task,"Edit Task")
+                        findNavController().navigate(action)
+                    }
+                }.exhaustive
             }
         }
 
@@ -89,7 +106,7 @@ class TaskFragment : Fragment(R.layout.fragment_tasks) , TasksAdapter.OnItemClic
         }
 
         viewLifecycleOwner.lifecycleScope.launch {
-            menu.findItem(R.id.action_hide_completed_tasks).isChecked=
+            menu.findItem(R.id.action_hide_completed_tasks).isChecked =
                 viewModel.preferencesFlow.first().hideCompleted
         }
     }
@@ -100,7 +117,7 @@ class TaskFragment : Fragment(R.layout.fragment_tasks) , TasksAdapter.OnItemClic
                 viewModel.onSortOrderSelected(SortOrder.BY_NAME)
                 true
             }
-            R.id.action_hide_completed_tasks ->{
+            R.id.action_hide_completed_tasks -> {
                 item.isChecked = !item.isChecked
                 viewModel.onHideCompletedClick(item.isChecked)
                 true
@@ -109,9 +126,10 @@ class TaskFragment : Fragment(R.layout.fragment_tasks) , TasksAdapter.OnItemClic
                 viewModel.onSortOrderSelected(SortOrder.BY_DATE)
                 true
             }
-            R.id.action_delete_completed_tasks ->{
+            R.id.action_delete_completed_tasks -> {
                 true
-            }else -> super.onOptionsItemSelected(item)
+            }
+            else -> super.onOptionsItemSelected(item)
 
         }
     }
